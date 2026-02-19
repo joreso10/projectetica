@@ -12,6 +12,10 @@ const summaryEl = document.getElementById('summary');
 const pairListEl = document.getElementById('pairList');
 const board = document.getElementById('gameBoard');
 const progressBar = document.getElementById('progressBar');
+const winDialog = document.getElementById('winDialog');
+const winStats = document.getElementById('winStats');
+const playAgainBtn = document.getElementById('playAgainBtn');
+const closeWinBtn = document.getElementById('closeWinBtn');
 
 const movesEl = document.getElementById('moves');
 const matchesEl = document.getElementById('matches');
@@ -48,6 +52,11 @@ startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', restartGame);
 peekBtn.addEventListener('click', peekAllCards);
 backToSetupBtn.addEventListener('click', backToSetup);
+playAgainBtn.addEventListener('click', () => {
+  closeWinDialog();
+  restartGame();
+});
+closeWinBtn.addEventListener('click', closeWinDialog);
 
 ['dragenter', 'dragover'].forEach((eventName) => {
   dropZone.addEventListener(eventName, (event) => {
@@ -55,14 +64,25 @@ backToSetupBtn.addEventListener('click', backToSetup);
     dropZone.classList.add('active');
   });
 });
-
 ['dragleave', 'drop'].forEach((eventName) => {
   dropZone.addEventListener(eventName, () => dropZone.classList.remove('active'));
 });
-
 dropZone.addEventListener('drop', (event) => {
   event.preventDefault();
   prepareFromFileList(event.dataTransfer?.files);
+});
+dropZone.addEventListener('click', () => folderInput.click());
+dropZone.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    folderInput.click();
+  }
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && appRoot.classList.contains('game-mode')) {
+    backToSetup();
+  }
 });
 
 function normalizeBaseName(fileName) {
@@ -94,13 +114,13 @@ updatePeekLabel();
 
 function prepareFromFileList(fileList) {
   stopTimer();
+  closeWinDialog();
   gameStarted = false;
   resetHud();
   board.innerHTML = '';
   releaseOldObjectUrls();
 
   const files = [...(fileList || [])].filter((file) => file.type.startsWith('image/'));
-
   if (files.length === 0) {
     statusEl.textContent = 'No images found in dropped/selected content.';
     summaryEl.textContent = '';
@@ -129,14 +149,12 @@ function prepareFromFileList(fileList) {
   for (const [key, group] of grouped.entries()) {
     const sorted = [...group].sort((a, b) => a.name.localeCompare(b.name));
     const pairCount = Math.floor(sorted.length / 2);
-
     if (pairCount === 0) {
       ignored += 1;
       continue;
     }
 
     stats.push({ key, files: sorted.length, pairs: pairCount });
-
     for (let i = 0; i < pairCount * 2; i += 2) {
       deck.push(createCardData(sorted[i], key), createCardData(sorted[i + 1], key));
     }
@@ -186,17 +204,13 @@ function renderPairPreview(stats) {
 function createCardData(file, pairKey) {
   const src = URL.createObjectURL(file);
   currentObjectUrls.push(src);
-  return {
-    id: `${pairKey}-${crypto.randomUUID()}`,
-    pairKey,
-    name: file.name,
-    src
-  };
+  return { id: `${pairKey}-${crypto.randomUUID()}`, pairKey, name: file.name, src };
 }
 
 function startGame() {
   if (preparedDeck.length === 0) return;
 
+  closeWinDialog();
   board.innerHTML = '';
   resetTurn();
   moves = 0;
@@ -221,7 +235,6 @@ function startGame() {
   statusEl.textContent = 'Game started. Match all the cards!';
   enterGameMode();
 }
-
 
 function enterGameMode() {
   appRoot.classList.add('game-mode');
@@ -259,6 +272,14 @@ function buildCardElement(cardData) {
       </span>
     </span>
   `;
+
+  const img = btn.querySelector('img');
+  img.addEventListener('error', () => {
+    img.replaceWith(Object.assign(document.createElement('div'), {
+      className: 'img-fallback',
+      textContent: 'Image failed to load'
+    }));
+  });
 
   btn.addEventListener('click', () => flipCard(btn));
   return btn;
@@ -299,12 +320,11 @@ function flipCard(card) {
   updateAccuracy();
   lockBoard = true;
 
-  const mismatchDelay = getDifficultyConfig().mismatchDelay;
   window.setTimeout(() => {
-    firstCard.classList.remove('revealed');
-    secondCard.classList.remove('revealed');
+    firstCard?.classList.remove('revealed');
+    secondCard?.classList.remove('revealed');
     resetTurn();
-  }, mismatchDelay);
+  }, getDifficultyConfig().mismatchDelay);
 }
 
 function peekAllCards() {
@@ -315,7 +335,6 @@ function peekAllCards() {
 
   window.setTimeout(() => {
     toReveal.forEach((card) => card.classList.remove('revealed'));
-    lockBoard = false;
     resetTurn();
   }, getDifficultyConfig().peekMs);
 }
@@ -323,10 +342,22 @@ function peekAllCards() {
 function handleWin() {
   stopTimer();
   const timeLabel = formatTime(secondsElapsed);
-  statusEl.textContent = `🎉 You won in ${moves} moves and ${timeLabel}!`;
-  gameHint.hidden = false;
   const best = saveBestScore(secondsElapsed);
+  statusEl.textContent = `🎉 You won in ${moves} moves and ${timeLabel}!`;
   bestEl.textContent = `Best: ${best ? formatTime(best) : '--'}`;
+  gameHint.hidden = false;
+  openWinDialog(timeLabel, best);
+}
+
+function openWinDialog(timeLabel, best) {
+  winStats.textContent = `Moves: ${moves} • Time: ${timeLabel} • Best: ${best ? formatTime(best) : '--'}`;
+  if (typeof winDialog.showModal === 'function') {
+    if (!winDialog.open) winDialog.showModal();
+  }
+}
+
+function closeWinDialog() {
+  if (winDialog.open) winDialog.close();
 }
 
 function updateProgress() {
@@ -339,6 +370,7 @@ function updateAccuracy() {
     accuracyEl.textContent = 'Accuracy: --';
     return;
   }
+
   const accuracy = Math.round((matchedPairs / moves) * 100);
   accuracyEl.textContent = `Accuracy: ${accuracy}%`;
 }
@@ -380,9 +412,7 @@ function formatTime(totalSeconds) {
 
 function initBestScore() {
   const raw = Number(window.localStorage.getItem(BEST_KEY));
-  bestEl.textContent = Number.isFinite(raw) && raw > 0
-    ? `Best: ${formatTime(raw)}`
-    : 'Best: --';
+  bestEl.textContent = Number.isFinite(raw) && raw > 0 ? `Best: ${formatTime(raw)}` : 'Best: --';
 }
 
 function saveBestScore(seconds) {

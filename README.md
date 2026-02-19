@@ -13,6 +13,7 @@ A polished browser memory card game that builds itself from your own photo folde
 - ✅ Progress bar and responsive compact board layout for bigger games
 - ✅ Start now switches to a focused full game view
 - ✅ Improved card rendering for better visibility across browsers
+- ✅ Win dialog and keyboard-friendly setup interactions
 
 ## Pairing rules
 

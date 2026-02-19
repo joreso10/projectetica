@@ -64,9 +64,17 @@
     </section>
 
     <section id="gameBoard" class="board" aria-label="Memory game board"></section>
-
     <p id="gameHint" class="game-hint" hidden>Tap cards to find matching names.</p>
   </main>
+
+  <dialog id="winDialog" class="win-dialog">
+    <h2>You won 🎉</h2>
+    <p id="winStats"></p>
+    <div class="win-actions">
+      <button id="playAgainBtn">Play again</button>
+      <button id="closeWinBtn" class="ghost">Close</button>
+    </div>
+  </dialog>
 
   <script src="script.js"></script>
 </body>

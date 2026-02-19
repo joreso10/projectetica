@@ -78,13 +78,8 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.ghost {
-  background: transparent;
-}
-
-.hud-back {
-  justify-self: start;
-}
+.ghost { background: transparent; }
+.hud-back { justify-self: start; }
 
 .app.game-mode .hero,
 .app.game-mode .setup {
@@ -237,12 +232,23 @@ button:disabled {
   padding: 0.35rem;
 }
 
-.card img {
+.card img,
+.img-fallback {
   width: 100%;
   flex: 1;
   min-height: 0;
   object-fit: cover;
   border-radius: 0.45rem;
+}
+
+.img-fallback {
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  background: #111827;
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  text-align: center;
 }
 
 .card-name {
@@ -259,6 +265,20 @@ button:disabled {
 
 .card.matched { animation: pulseMatch 420ms ease; }
 
+.win-dialog {
+  border: 1px solid #334155;
+  border-radius: 0.8rem;
+  background: #0f172a;
+  color: var(--text);
+  width: min(440px, calc(100% - 2rem));
+}
+
+.win-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(10px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -268,7 +288,6 @@ button:disabled {
   0%, 100% { transform: scale(1); }
   45% { transform: scale(1.03); }
 }
-
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
