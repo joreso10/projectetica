@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Folder Memory Cards</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app" id="appRoot">
+    <header class="hero">
+      <h1>✨ Smart Folder Memory Game</h1>
+      <p class="lead">
+        Drop a folder of photos. The game auto-matches names like
+        <code>pep.jpg</code> + <code>pep1.jpg</code> into pairs.
+      </p>
+    </header>
+
+    <section class="setup" id="setupPanel" aria-label="Game setup">
+      <div class="setup-actions">
+        <label class="folder-picker" for="folderInput">Choose photo folder</label>
+        <input id="folderInput" type="file" multiple webkitdirectory directory accept="image/*" />
+        <button id="startBtn" disabled>Start Game</button>
+        <button id="restartBtn" disabled>Restart</button>
+        <button id="peekBtn" disabled>Peek</button>
+      </div>
+
+      <div class="game-options" aria-label="Game options">
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard</option>
+          <option value="expert">Expert</option>
+        </select>
+      </div>
+
+      <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="Drop folder of photos here">
+        <strong>Drop your folder here</strong>
+        <span>or click “Choose photo folder”</span>
+      </div>
+
+      <p id="status" class="status">Add at least one matching pair to start.</p>
+      <p id="summary" class="summary"></p>
+
+      <div class="pair-preview">
+        <h2>Detected pair groups</h2>
+        <ul id="pairList"></ul>
+      </div>
+    </section>
+
+    <section class="hud" id="hudPanel" aria-live="polite">
+      <button id="backToSetupBtn" class="ghost hud-back" hidden>Back to setup</button>
+      <span id="moves">Moves: 0</span>
+      <span id="matches">Matches: 0</span>
+      <span id="streak">Streak: 0</span>
+      <span id="timer">Time: 00:00</span>
+      <span id="best">Best: --</span>
+      <span id="accuracy">Accuracy: --</span>
+    </section>
+
+    <section class="progress-wrap" aria-label="Match progress">
+      <div id="progressBar" class="progress-bar"></div>
+    </section>
+
+    <section id="gameBoard" class="board" aria-label="Memory game board"></section>
+    <p id="gameHint" class="game-hint" hidden>Tap cards to find matching names.</p>
+  </main>
+
+  <dialog id="winDialog" class="win-dialog">
+    <h2>You won 🎉</h2>
+    <p id="winStats"></p>
+    <div class="win-actions">
+      <button id="playAgainBtn">Play again</button>
+      <button id="closeWinBtn" class="ghost">Close</button>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
