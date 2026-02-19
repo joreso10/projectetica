@@ -4,6 +4,9 @@ const difficultySelect = document.getElementById('difficulty');
 const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
 const peekBtn = document.getElementById('peekBtn');
+const backToSetupBtn = document.getElementById('backToSetupBtn');
+const appRoot = document.getElementById('appRoot');
+const gameHint = document.getElementById('gameHint');
 const statusEl = document.getElementById('status');
 const summaryEl = document.getElementById('summary');
 const pairListEl = document.getElementById('pairList');
@@ -44,6 +47,7 @@ folderInput.addEventListener('change', () => prepareFromFileList(folderInput.fil
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', restartGame);
 peekBtn.addEventListener('click', peekAllCards);
+backToSetupBtn.addEventListener('click', backToSetup);
 
 ['dragenter', 'dragover'].forEach((eventName) => {
   dropZone.addEventListener(eventName, (event) => {
@@ -75,6 +79,19 @@ function releaseOldObjectUrls() {
   currentObjectUrls = [];
 }
 
+function updatePeekLabel() {
+  const seconds = (getDifficultyConfig().peekMs / 1000).toFixed(1).replace(/\.0$/, '');
+  peekBtn.textContent = `Peek (${seconds}s)`;
+}
+
+difficultySelect.addEventListener('change', () => {
+  updatePeekLabel();
+  if (preparedDeck.length > 0) {
+    statusEl.textContent = `Ready: ${preparedDeck.length} cards (${totalPairs} pairs) on ${difficultySelect.value} mode.`;
+  }
+});
+updatePeekLabel();
+
 function prepareFromFileList(fileList) {
   stopTimer();
   gameStarted = false;
@@ -93,6 +110,7 @@ function prepareFromFileList(fileList) {
     startBtn.disabled = true;
     restartBtn.disabled = true;
     peekBtn.disabled = true;
+    backToSetupBtn.hidden = true;
     return;
   }
 
@@ -134,6 +152,7 @@ function prepareFromFileList(fileList) {
     startBtn.disabled = true;
     restartBtn.disabled = true;
     peekBtn.disabled = true;
+    backToSetupBtn.hidden = true;
     return;
   }
 
@@ -200,6 +219,21 @@ function startGame() {
 
   startTimer();
   statusEl.textContent = 'Game started. Match all the cards!';
+  enterGameMode();
+}
+
+
+function enterGameMode() {
+  appRoot.classList.add('game-mode');
+  backToSetupBtn.hidden = false;
+  gameHint.hidden = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function backToSetup() {
+  appRoot.classList.remove('game-mode');
+  backToSetupBtn.hidden = true;
+  gameHint.hidden = true;
 }
 
 function restartGame() {
@@ -290,6 +324,7 @@ function handleWin() {
   stopTimer();
   const timeLabel = formatTime(secondsElapsed);
   statusEl.textContent = `🎉 You won in ${moves} moves and ${timeLabel}!`;
+  gameHint.hidden = false;
   const best = saveBestScore(secondsElapsed);
   bestEl.textContent = `Best: ${best ? formatTime(best) : '--'}`;
 }

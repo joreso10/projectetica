@@ -11,6 +11,8 @@ A polished browser memory card game that builds itself from your own photo folde
 - ✅ Pair-group preview list before starting
 - ✅ Move, match, streak, accuracy, timer, and best-time stats
 - ✅ Progress bar and responsive compact board layout for bigger games
+- ✅ Start now switches to a focused full game view
+- ✅ Improved card rendering for better visibility across browsers
 
 ## Pairing rules
 

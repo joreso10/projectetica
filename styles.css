@@ -78,6 +78,31 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.ghost {
+  background: transparent;
+}
+
+.hud-back {
+  justify-self: start;
+}
+
+.app.game-mode .hero,
+.app.game-mode .setup {
+  display: none;
+}
+
+.app.game-mode .hud,
+.app.game-mode .progress-wrap,
+.app.game-mode .board,
+.app.game-mode .game-hint {
+  animation: fadeIn 220ms ease;
+}
+
+.game-hint {
+  margin-top: 0.75rem;
+  color: #cbd5e1;
+}
+
 #folderInput { display: none; }
 
 .drop-zone {
@@ -121,7 +146,7 @@ button:disabled {
 
 .hud {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 0.5rem;
   margin: 1rem 0 0.7rem;
 }
@@ -170,6 +195,8 @@ button:disabled {
   padding: 0;
   transform-style: preserve-3d;
   animation: cardIn 360ms ease both;
+  min-height: 130px;
+  display: block;
 }
 
 .card-inner {
@@ -188,12 +215,14 @@ button:disabled {
   inset: 0;
   border-radius: 0.75rem;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .card-back {
+  transform: rotateY(0deg);
   align-items: center;
   justify-content: center;
   border: 1px solid #475569;
@@ -238,4 +267,10 @@ button:disabled {
 @keyframes pulseMatch {
   0%, 100% { transform: scale(1); }
   45% { transform: scale(1.03); }
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
