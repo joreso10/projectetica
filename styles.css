@@ -1,0 +1,239 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --bg: #020617;
+  --bg-soft: #0f172a;
+  --panel: rgba(15, 23, 42, 0.8);
+  --line: #334155;
+  --text: #e2e8f0;
+  --accent: #38bdf8;
+  --accent-2: #a78bfa;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.14), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(167, 139, 250, 0.14), transparent 35%),
+    var(--bg);
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.hero {
+  margin-bottom: 1rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+}
+
+.lead {
+  margin-top: 0.6rem;
+  color: #cbd5e1;
+}
+
+.setup {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1.2rem 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+  backdrop-filter: blur(4px);
+}
+
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.folder-picker,
+#startBtn,
+#restartBtn {
+  border: 1px solid #475569;
+  border-radius: 0.6rem;
+  padding: 0.6rem 1rem;
+  background: #1e293b;
+  color: #f8fafc;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.folder-picker:hover,
+#startBtn:hover,
+#restartBtn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+#startBtn:disabled,
+#restartBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#folderInput {
+  display: none;
+}
+
+.drop-zone {
+  border: 2px dashed #64748b;
+  border-radius: 0.9rem;
+  min-height: 96px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 0.2rem;
+  background: #0b1222;
+  transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
+}
+
+.drop-zone.active {
+  border-color: var(--accent);
+  background: #082f49;
+  transform: scale(1.01);
+}
+
+.status,
+.summary {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+  margin: 1rem 0 1.2rem;
+}
+
+.hud > span {
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  padding: 0.45rem 0.6rem;
+  background: rgba(15, 23, 42, 0.8);
+  font-weight: 700;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+  gap: 0.75rem;
+  perspective: 1000px;
+}
+
+.card {
+  aspect-ratio: 4 / 5;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+  transform-style: preserve-3d;
+  animation: cardIn 360ms ease both;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 350ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.card.revealed .card-inner,
+.card.matched .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  backface-visibility: hidden;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-back {
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #475569;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  font-size: 1.6rem;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+  border: 1px solid #334155;
+  background: #020617;
+  padding: 0.4rem;
+}
+
+.card img {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.card-name {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  text-align: center;
+  border-radius: 0.4rem;
+  padding: 0.2rem;
+  background: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card.matched {
+  animation: pulseMatch 420ms ease;
+}
+
+.celebrate {
+  animation: celebrate 900ms ease;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseMatch {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.03); }
+}
+
+@keyframes celebrate {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  100% { box-shadow: 0 0 0 16px rgba(34, 197, 94, 0); }
+}
